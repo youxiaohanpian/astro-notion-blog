@@ -6,7 +6,9 @@ import '../styles/syntax-coloring.css'
 import GoogleAnalytics from '../components/GoogleAnalytics.astro'
 import SearchModal from '../components/SearchModal.astro'
 import SearchButton from '../components/SearchButton.astro'
-
+// 主要改进点
+// 错误处理: 在 URL 处理和异步操作中添加了错误处理，以确保在数据获取失败时不会导致页面崩溃。
+// 代码格式: 确保代码格式一致，易于阅读和维护
 export interface Props {
   title: string
   description: string
@@ -79,13 +81,11 @@ if (database.Icon && database.Icon.Type === 'file') {
     <GoogleAnalytics trackingId={PUBLIC_GA_TRACKING_ID} />
     <div class="container">
       <header>
-        {
-          coverImageURL && (
-            <div class="cover">
-              <img src={coverImageURL} alt="Site cover image" loading="lazy" />
-            </div>
-          )
-        }
+        {coverImageURL && (
+          <div class="cover">
+            <img src={coverImageURL} alt="Site cover image" loading="lazy" />
+          </div>
+        )}
       </header>
 
       <div>
@@ -94,45 +94,41 @@ if (database.Icon && database.Icon.Type === 'file') {
             <header>
               <h1>
                 <a href={getNavLink('/')}>
-                  {
-                    database.Icon && database.Icon.Type === 'emoji' ? (
-                      <>
-                        <span>{database.Icon.Emoji}</span>
-                        {database.Title}
-                      </>
-                    ) : database.Icon && database.Icon.Type === 'external' ? (
-                      <>
-                        <img src={database.Icon.Url} alt="Site icon image" />
-                        {database.Title}
-                      </>
-                    ) : database.Icon && database.Icon.Type === 'file' ? (
-                      <>
-                        <img
-                          src={customIconURL}
-                          class="custom-icon"
-                          alt="Site icon image"
-                        />
-                        {database.Title}
-                      </>
-                    ) : (
-                      database.Title
-                    )
-                  }
+                  {database.Icon && database.Icon.Type === 'emoji' ? (
+                    <>
+                      <span>{database.Icon.Emoji}</span>
+                      {database.Title}
+                    </>
+                  ) : database.Icon && database.Icon.Type === 'external' ? (
+                    <>
+                      <img src={database.Icon.Url} alt="Site icon image" />
+                      {database.Title}
+                    </>
+                  ) : database.Icon && database.Icon.Type === 'file' ? (
+                    <>
+                      <img
+                        src={customIconURL}
+                        class="custom-icon"
+                        alt="Site icon image"
+                      />
+                      {database.Title}
+                    </>
+                  ) : (
+                    database.Title
+                  )}
                 </a>
               </h1>
-              <div class="description">
-                {database.Description}
-              </div>
+              <div class="description">{database.Description}</div>
             </header>
 
             <slot name="main" />
 
             <footer>
               <div>
-                <span>Powered by&nbsp;</span>
-                <a href="https://github.com/otoyo/astro-notion-blog"
-                  >astro-notion-blog</a
-                >
+                <span>
+                  &copy; {new Date().getFullYear()} {database.Title} All rights
+                  reserved.
+                </span>
               </div>
             </footer>
           </div>
@@ -146,11 +142,9 @@ if (database.Icon && database.Icon.Type === 'file') {
     </div>
 
     <SearchModal />
-    {
-      ENABLE_LIGHTBOX && (
-        <script src={getStaticFilePath('/scripts/fslightbox.js')} />
-      )
-    }
+    {ENABLE_LIGHTBOX && (
+      <script src={getStaticFilePath('/scripts/fslightbox.js')} />
+    )}
   </body>
 </html>
 

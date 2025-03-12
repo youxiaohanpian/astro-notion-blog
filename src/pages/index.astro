@@ -19,32 +19,39 @@ import BlogPostsLink from '../components/BlogPostsLink.astro'
 import BlogTagsLink from '../components/BlogTagsLink.astro'
 import styles from '../styles/blog.module.css'
 
-const [posts, rankedPosts, tags, numberOfPages] = await Promise.all([
-  getPosts(NUMBER_OF_POSTS_PER_PAGE),
-  getRankedPosts(),
-  getAllTags(),
-  getNumberOfPages(),
-])
+let posts = [];
+let rankedPosts = [];
+let tags = [];
+let numberOfPages = 0;
+
+try {
+  [posts, rankedPosts, tags, numberOfPages] = await Promise.all([
+    getPosts(NUMBER_OF_POSTS_PER_PAGE),
+    getRankedPosts(),
+    getAllTags(),
+    getNumberOfPages(),
+  ]);
+} catch (error) {
+  console.error('Error fetching data:', error);
+}
 ---
 
 <Layout>
   <div slot="main" class={styles.main}>
-    {
-      posts.length === 0 ? (
-        <NoContents contents={posts} />
-      ) : (
-        posts.map((post) => (
-          <div class={styles.post} key={post.Slug}>
-            <PostDate post={post} />
-            <PostTags post={post} />
-            <PostTitle post={post} />
-            <PostFeaturedImage post={post} />
-            <PostExcerpt post={post} />
-            <ReadMoreLink post={post} />
-          </div>
-        ))
-      )
-    }
+    {posts.length === 0 ? (
+      <NoContents contents={posts} />
+    ) : (
+      posts.map((post) => (
+        <div class={styles.post} key={post.Slug}>
+          <PostDate post={post} />
+          <PostTags post={post} />
+          <PostTitle post={post} />
+          <PostFeaturedImage post={post} />
+          <PostExcerpt post={post} />
+          <ReadMoreLink post={post} />
+        </div>
+      ))
+    )}
 
     <footer>
       <Pagination currentPage={1} numberOfPages={numberOfPages} />

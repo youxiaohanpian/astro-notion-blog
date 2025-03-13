@@ -7,7 +7,7 @@
           "_fetch-notion-blocks"
         ],
         "parallel": 8,
-        "accessToken": "NDI3NjFjY2UtZmFlZi00NTA0LWFlYTgtN2M2NDI0MjM4M2JmfHJlYWQtd3JpdGU="
+        "accessToken": "${NX_CLOUD_ACCESS_TOKEN}"
       }
     }
   },

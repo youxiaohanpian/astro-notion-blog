@@ -11,6 +11,11 @@ export interface Props {
 }
 
 const { block, headings } = Astro.props
+
+// 确保 block.Quote 存在
+if (!block.Quote) {
+  throw new Error('Quote block is undefined')
+}
 ---
 
 <blockquote class={snakeToKebab(block.Quote.Color)}>
@@ -21,7 +26,12 @@ const { block, headings } = Astro.props
   }
   {
     block.Quote.Children && (
-      <NotionBlocks blocks={block.Quote.Children} headings={headings} />
+      <NotionBlocks 
+        blocks={block.Quote.Children} 
+        headings={headings} 
+        isRoot={false} 
+        level={1} 
+      />
     )
   }
 </blockquote>
@@ -29,9 +39,22 @@ const { block, headings } = Astro.props
 <style>
   blockquote {
     margin: 0.6rem 0;
-    padding: 0 0.9rem;
-    border-left: 3px solid var(--fg);
+    padding: 0.5rem 0.9rem;
+    border-left: 3px solid var(--text-color);
+    border-radius: 0 4px 4px 0; /* 右侧圆角改为4px */
     font-size: 1rem;
     line-height: 1.8rem;
+    background-color: rgba(235, 236, 237, 0.3); /* 添加轻微背景色 */
+    box-sizing: border-box; /* 确保内边距不会增加宽度 */
+    overflow: hidden; /* 防止内容溢出 */
+    word-wrap: break-word; /* 确保长文本会换行 */
+    width: 100%; /* 确保宽度不超过父容器 */
+  }
+  
+  /* 响应式调整 */
+  @media (max-width: 768px) {
+    blockquote {
+      padding: 0.4rem 0.8rem;
+    }
   }
 </style>

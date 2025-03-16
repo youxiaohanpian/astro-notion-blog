@@ -1,5 +1,5 @@
 ---
-import { RichText } from '../../../lib/interfaces.ts'
+import type { RichText } from '../../../lib/interfaces.ts'
 
 export interface Props {
   richText: RichText
@@ -20,5 +20,7 @@ const { richText } = Astro.props
 <style>
   a {
     text-decoration: underline;
+    margin-right: 0.25em;
+    display: inline-block;
   }
 </style>

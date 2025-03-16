@@ -23,47 +23,83 @@ for (let i = startPage; i <= endPage; i++) {
 ---
 
 <div class="pagination">
-  <a href={getPageLink(1, tag)} class={isFirstPage && 'inactive'}>&lt;&lt;</a>
+  <a href={getPageLink(1, tag)} class={`pagination-arrow ${isFirstPage ? 'inactive' : ''}`}>&lt;&lt;</a>
   {
     pages.map((p: number) => (
-      <a href={getPageLink(p, tag)} class={p === currentPage && 'inactive'}>
+      <a href={getPageLink(p, tag)} class={`pagination-number ${p === currentPage ? 'active' : ''}`}>
         {p}
       </a>
     ))
   }
-  <a href={getPageLink(numberOfPages, tag)} class={isLastPage && 'inactive'}
-    >&gt;&gt;</a
-  >
+  <a href={getPageLink(numberOfPages, tag)} class={`pagination-arrow ${isLastPage ? 'inactive' : ''}`}>&gt;&gt;</a>
 </div>
 
 <style>
   .pagination {
     display: flex;
     width: 100%;
-    margin: 0 auto;
-    color: var(--fg);
+    margin: 2rem auto;
     justify-content: center;
     align-items: center;
   }
+  
   .pagination a {
-    display: block;
-    width: 2.4rem;
-    height: 3rem;
-    margin: 0 0.4rem;
-    border-radius: var(--radius);
-    background: #f4f4f4;
-    color: inherit;
-    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    margin: 0 0.3rem;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #666;
+    font-size: 0.9rem;
     text-align: center;
-    text-decoration: underline;
-    font-weight: 500;
-    line-height: 3rem;
-  }
-  .pagination a:hover:not(.inactive) {
-    background: #ddd;
-  }
-  .pagination a.inactive {
-    color: #999;
     text-decoration: none;
+    font-weight: 500;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    transition: all 0.2s ease;
+  }
+  
+  .pagination-number {
+    font-weight: 600;
+  }
+  
+  .pagination-arrow {
+    font-size: 0.8rem;
+  }
+  
+  .pagination a:hover:not(.inactive):not(.active) {
+    background: #fefefe;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+    color: #333;
+  }
+  
+  .pagination a.active {
+    background: #333;
+    color: #ffffff;
+    cursor: default;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+  
+  .pagination a.inactive {
+    color: #aaa;
+    background: #f4f4f4;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+  
+  @media (max-width: 480px) {
+    .pagination {
+      margin: 1.5rem auto;
+    }
+    
+    .pagination a {
+      width: 36px;
+      height: 36px;
+      margin: 0 0.2rem;
+      font-size: 0.8rem;
+    }
   }
 </style>

@@ -10,15 +10,29 @@ export interface Props {
 }
 
 const { block, headings } = Astro.props
+
+// 确保 block.Callout 存在
+if (!block.Callout) {
+  throw new Error('Callout block is undefined')
+}
+
+// 类型保护函数
+const isEmoji = (icon: any): icon is interfaces.Emoji => {
+  return icon && icon.Type === 'emoji';
+}
+
+const isFileObject = (icon: any): icon is interfaces.FileObject => {
+  return icon && icon.Type === 'external' || icon.Type === 'file';
+}
 ---
 
 <div class={`callout ${snakeToKebab(block.Callout.Color)}`}>
   {
     block.Callout.Icon && (
       <div class="icon">
-        {block.Callout.Icon.Type === 'emoji' ? (
+        {isEmoji(block.Callout.Icon) ? (
           block.Callout.Icon.Emoji
-        ) : block.Callout.Icon.Type === 'external' ? (
+        ) : isFileObject(block.Callout.Icon) ? (
           <img src={block.Callout.Icon.Url} alt="Icon in a callout block" />
         ) : null}
       </div>
@@ -32,7 +46,12 @@ const { block, headings } = Astro.props
     }
     {
       block.Callout.Children && (
-        <NotionBlocks blocks={block.Callout.Children} headings={headings} />
+        <NotionBlocks 
+          blocks={block.Callout.Children} 
+          headings={headings} 
+          isRoot={false} 
+          level={1} 
+        />
       )
     }
   </div>
@@ -47,21 +66,32 @@ const { block, headings } = Astro.props
     font-size: 1rem;
     font-weight: 400;
     line-height: 1.6rem;
-    border-radius: 3px;
+    border-radius: 4px;
     border-width: 1px;
     border-style: solid;
     border-color: transparent;
     background: rgba(235, 236, 237, 0.6);
+    box-sizing: border-box;
+    overflow: hidden;
+    word-wrap: break-word;
   }
   .callout > div {
     margin: 0;
     line-height: 1.5rem;
+    max-width: calc(100% - 2rem);
   }
   .callout > div.icon {
     margin-right: 0.7rem;
+    flex-shrink: 0;
   }
   .callout > div.icon > img {
     width: 1.2rem;
     height: 1.2rem;
+  }
+  
+  @media (max-width: 768px) {
+    .callout {
+      padding: 12px 10px;
+    }
   }
 </style>

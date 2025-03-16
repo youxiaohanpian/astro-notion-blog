@@ -1,5 +1,11 @@
 English | [日本語](README.ja.md)
 
+> **Note**: 这个版本包含了多项界面和用户体验的增强。查看 [ENHANCEMENT.md](ENHANCEMENT.md) 了解详细的修改内容（支持中文、英文和日文）。
+
+> **图片显示规则**: 本版本增强了图片显示逻辑，支持同时从FeaturedImage和Cover字段获取图片。优先显示在Notion中勾选的FeaturedImage，如果未设置则会显示Cover字段的图片。
+
+> **Slug自动生成**: 本版本添加了自动从标题生成Slug的功能。支持将中文标题自动翻译为英文并生成合适的Slug，无需手动设置Slug字段。实现了多种翻译服务支持和本地拼音转换作为备用方案，确保在各种网络环境下都能正常工作。您可以在Notion数据表中删除Slug字段，系统会自动处理。如需修改或添加翻译服务，请查看 [ENHANCEMENT.md](ENHANCEMENT.md#如何修改或扩展翻译服务) 中的详细说明。
+
 # astro-notion-blog
 
 [![GitHub stars](https://img.shields.io/github/stars/otoyo/astro-notion-blog)](https://github.com/otoyo/astro-notion-blog/stargazers)

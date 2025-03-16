@@ -55,6 +55,8 @@ import type {
 } from '../interfaces'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 import { Client, APIResponseError } from '@notionhq/client'
+import { generateSlugFromTitleSync, generateSlugFromTitle } from '../slug-helpers'
+import { buildURLToHTMLMap } from '../blog-helpers'
 
 const client = new Client({
   auth: NOTION_API_SECRET,
@@ -128,10 +130,24 @@ export async function getAllPosts(): Promise<Post[]> {
     params['start_cursor'] = res.next_cursor as string
   }
 
-  postsCache = results
-    .filter((pageObject) => _validPageObject(pageObject))
-    .map((pageObject) => _buildPost(pageObject))
-  return postsCache
+  // 过滤有效的页面对象
+  const validResults = results.filter((pageObject) => _validPageObject(pageObject));
+  
+  // 处理每个页面对象，生成 Post
+  const posts: Post[] = [];
+  for (const pageObject of validResults) {
+    const post = _buildPost(pageObject);
+    
+    // 如果 Slug 为空，则异步生成一个
+    if (!post.Slug) {
+      post.Slug = await generateSlugIfNeeded(pageObject);
+    }
+    
+    posts.push(post);
+  }
+  
+  postsCache = posts;
+  return postsCache;
 }
 
 export async function getPosts(pageSize = 10): Promise<Post[]> {
@@ -917,13 +933,34 @@ async function _getSyncedBlockChildren(block: Block): Promise<Block[]> {
 
 function _validPageObject(pageObject: responses.PageObject): boolean {
   const prop = pageObject.properties
+
   return (
     !!prop.Page.title &&
     prop.Page.title.length > 0 &&
-    !!prop.Slug.rich_text &&
-    prop.Slug.rich_text.length > 0 &&
     !!prop.Date.date
   )
+}
+
+async function generateSlugIfNeeded(pageObject: responses.PageObject): Promise<string> {
+  const prop = pageObject.properties;
+  
+  // 获取标题
+  const title = prop.Page.title
+    ? prop.Page.title.map((richText) => richText.plain_text).join('')
+    : '';
+    
+  // 如果 Slug 已存在，则使用现有的
+  if (prop.Slug.rich_text && prop.Slug.rich_text.length > 0) {
+    return prop.Slug.rich_text.map((richText) => richText.plain_text).join('');
+  } 
+  
+  // 否则，根据标题生成 slug
+  if (title) {
+    return await generateSlugFromTitle(title);
+  }
+  
+  // 如果没有标题，返回空字符串
+  return '';
 }
 
 function _buildPost(pageObject: responses.PageObject): Post {
@@ -971,16 +1008,29 @@ function _buildPost(pageObject: responses.PageObject): Post {
     }
   }
 
+  // 尝试从文章内容中提取第一张图片
+  // 注意：这需要在接下来的步骤中在获取完整文章内容后实现
+  // 这里只是预留了接口
+
+  const title = prop.Page.title
+    ? prop.Page.title.map((richText) => richText.plain_text).join('')
+    : '';
+
+  // 获取 Slug，如果为空则使用同步方式生成一个临时的
+  let slug = '';
+  if (prop.Slug.rich_text && prop.Slug.rich_text.length > 0) {
+    slug = prop.Slug.rich_text.map((richText) => richText.plain_text).join('');
+  } else if (title) {
+    // 使用标题同步生成 slug（不含翻译）
+    slug = generateSlugFromTitleSync(title);
+  }
+
   const post: Post = {
     PageId: pageObject.id,
-    Title: prop.Page.title
-      ? prop.Page.title.map((richText) => richText.plain_text).join('')
-      : '',
+    Title: title,
     Icon: icon,
     Cover: cover,
-    Slug: prop.Slug.rich_text
-      ? prop.Slug.rich_text.map((richText) => richText.plain_text).join('')
-      : '',
+    Slug: slug,
     Date: prop.Date.date ? prop.Date.date.start : '',
     Tags: prop.Tags.multi_select ? prop.Tags.multi_select : [],
     Excerpt:

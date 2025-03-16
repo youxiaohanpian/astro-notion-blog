@@ -288,3 +288,101 @@ export const parseYouTubeVideoId = (url: URL): string => {
 
   return ''
 }
+
+/**
+ * 从文章块中提取第一张图片
+ */
+export function extractFirstImage(blocks: any[]): { Type: string; Url: string } | null {
+  if (!blocks || blocks.length === 0) return null;
+  
+  console.log(`检查 ${blocks.length} 个块以提取图片`);
+  
+  // 优先处理ColumnList块，因为通常列布局的图片是文章的主要图片
+  for (const block of blocks) {
+    if (block.Type === 'column_list' && block.ColumnList && block.ColumnList.Columns) {
+      console.log(`找到列布局块: ${block.Id}, 列数: ${block.ColumnList.Columns.length}`);
+      
+      // 先检查第一列中的图片
+      for (const column of block.ColumnList.Columns) {
+        if (column.Children && column.Children.length > 0) {
+          for (const childBlock of column.Children) {
+            if (childBlock.Type === 'image' && childBlock.Image) {
+              console.log('找到列布局中的图片:', childBlock.Id);
+              if (childBlock.Image.File && childBlock.Image.File.Url) {
+                console.log('提取到列布局中的文件图片:', childBlock.Image.File.Url);
+                return {
+                  Type: 'file',
+                  Url: childBlock.Image.File.Url
+                };
+              } else if (childBlock.Image.External && childBlock.Image.External.Url) {
+                console.log('提取到列布局中的外部图片:', childBlock.Image.External.Url);
+                return {
+                  Type: 'external',
+                  Url: childBlock.Image.External.Url
+                };
+              }
+            }
+          }
+        }
+      }
+      
+      // 如果第一列没有找到图片，尝试递归检查所有列
+      const columnBlocks = block.ColumnList.Columns.flatMap((col: any) => col.Children || []);
+      if (columnBlocks.length > 0) {
+        const firstImageInColumns = extractFirstImage(columnBlocks);
+        if (firstImageInColumns) return firstImageInColumns;
+      }
+    }
+  }
+  
+  // 然后检查所有顶级图片块
+  for (const block of blocks) {
+    if (block.Type === 'image' && block.Image) {
+      console.log('找到顶级图片块:', block.Id);
+      if (block.Image.File && block.Image.File.Url) {
+        console.log('提取到顶级文件图片:', block.Image.File.Url);
+        return {
+          Type: 'file',
+          Url: block.Image.File.Url
+        };
+      } else if (block.Image.External && block.Image.External.Url) {
+        console.log('提取到顶级外部图片:', block.Image.External.Url);
+        return {
+          Type: 'external',
+          Url: block.Image.External.Url
+        };
+      }
+    }
+  }
+  
+  // 最后检查其他子块
+  for (const block of blocks) {
+    if (block.Type !== 'column_list') { // 跳过已经检查过的列布局
+      // 检查块类型
+      console.log(`检查块类型: ${block.Type || '未知类型'}, ID: ${block.Id || '未知ID'}`);
+      
+      // 递归检查子块
+      const childBlocks = [
+        ...(block.Paragraph?.Children || []),
+        ...(block.Heading1?.Children || []),
+        ...(block.Heading2?.Children || []),
+        ...(block.Heading3?.Children || []),
+        ...(block.BulletedListItem?.Children || []),
+        ...(block.NumberedListItem?.Children || []),
+        ...(block.ToDo?.Children || []),
+        ...(block.Toggle?.Children || []),
+        ...(block.Quote?.Children || []),
+        ...(block.Callout?.Children || []),
+        ...(block.SyncedBlock?.Children || [])
+      ];
+      
+      if (childBlocks.length > 0) {
+        console.log(`块 ${block.Id || '未知ID'} 有 ${childBlocks.length} 个子块，递归检查...`);
+        const firstImageInChildren = extractFirstImage(childBlocks);
+        if (firstImageInChildren) return firstImageInChildren;
+      }
+    }
+  }
+  
+  return null;
+}

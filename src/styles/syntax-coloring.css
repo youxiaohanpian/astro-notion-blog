@@ -1,70 +1,71 @@
-.token.comment,
-.token.prolog,
-.token.doctype,
-.token.cdata {
+/* 确保语法高亮样式正确应用到代码块 */
+.code pre code .token.comment,
+.code pre code .token.prolog,
+.code pre code .token.doctype,
+.code pre code .token.cdata {
   color: slategray;
 }
 
-.token.namespace {
+.code pre code .token.namespace {
   opacity: 0.7;
 }
 
-.token.string,
-.token.attr-value {
+.code pre code .token.string,
+.code pre code .token.attr-value {
   color: #690;
 }
 
-.token.punctuation {
+.code pre code .token.punctuation {
   color: #999;
 }
 
-.token.operator {
+.code pre code .token.operator {
   color: #9a6e3a;
 }
 
-.token.entity,
-.token.url,
-.token.symbol,
-.token.number,
-.token.boolean,
-.token.variable,
-.token.constant,
-.token.property,
-.token.regex {
+.code pre code .token.entity,
+.code pre code .token.url,
+.code pre code .token.symbol,
+.code pre code .token.number,
+.code pre code .token.boolean,
+.code pre code .token.variable,
+.code pre code .token.constant,
+.code pre code .token.property,
+.code pre code .token.regex {
   color: #905;
 }
 
-.token.prefix.inserted {
+.code pre code .token.prefix.inserted {
   color: #690;
 }
 
-.token.prefix.deleted {
+.code pre code .token.prefix.deleted {
   color: #dd4a68;
 }
 
-.token.atrule,
-.token.keyword,
-.token.attr-name,
-.language-autohotkey .token.selector {
+.code pre code .token.atrule,
+.code pre code .token.keyword,
+.code pre code .token.attr-name,
+.code pre code .language-autohotkey .token.selector {
   color: #07a;
 }
 
-.token.function,
-.language-autohotkey .token.tag {
+.code pre code .token.function,
+.code pre code .language-autohotkey .token.tag {
   color: #dd4a68;
 }
 
-.token.tag,
-.token.selector,
-.language-autohotkey .token.keyword {
+.code pre code .token.tag,
+.code pre code .token.selector,
+.code pre code .language-autohotkey .token.keyword {
   color: #00009f;
 }
 
-.token.important,
-.token.bold {
+.code pre code .token.important,
+.code pre code .token.bold {
   font-weight: bold;
 }
 
-.token.italic {
+.code pre code .token.italic {
   font-style: italic;
 }

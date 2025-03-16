@@ -356,7 +356,7 @@ Consistent with the original project, this project is licensed under the [MIT Li
 - ホバー状態を最適化し、インタラクション体験を向上
 
 ### 2. ブログカードの最適化
-- 「もっと読む」ボタンを削除し、カード全体をクリック可能に
+- "もっと読む"ボタンを削除し、カード全体をクリック可能に
 - タグのレイアウトとスタイルを最適化
 - レスポンシブデザインを改善し、モバイル体験を向上
 - 画像表示ロジックを強化し、FeaturedImageとCoverの両フィールドをサポート（FeaturedImageを優先）
@@ -511,4 +511,16 @@ class PinyinTranslationService implements TranslationService {
 
 ## ライセンス
 
-オリジナルプロジェクトと一貫して、このプロジェクトは[MITライセンス](LICENSE)の下でライセンスされています。 
+オリジナルプロジェクトと一貫して、このプロジェクトは[MITライセンス](LICENSE)の下でライセンスされています。
+
+{
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ]
+} 
